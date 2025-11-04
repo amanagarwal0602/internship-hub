@@ -96,6 +96,23 @@ body {
     background-color: rgba(74, 144, 226, 0.1);
 }
 
+/* Desktop Logout Button Styling */
+.nav-links .btn-logout {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white !important;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.3);
+    transition: all 0.3s ease;
+}
+
+.nav-links .btn-logout:hover {
+    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
 /* ===================================
    Hero Section
    =================================== */
@@ -3020,13 +3037,27 @@ section {
         color: var(--primary-color);
     }
     
-    .btn-logout {
-        color: #e74c3c !important;
+    /* Logout button styling for mobile */
+    .nav-links .btn-logout {
+        color: white !important;
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         font-weight: 600;
+        margin: 1rem 2rem;
+        padding: 0.9rem 1.5rem !important;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        transition: all 0.3s ease;
     }
     
-    .btn-logout:hover {
-        background-color: rgba(231, 76, 60, 0.1) !important;
+    .nav-links .btn-logout:hover {
+        background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+    
+    .nav-links li:has(.btn-logout) {
+        border-bottom: none;
     }
 }
 

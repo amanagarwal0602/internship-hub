@@ -34,8 +34,8 @@ function Navbar() {
                 <div className="nav-brand">
                     <h2>🎓 InternHub</h2>
                 </div>
-                {/* Hamburger menu button for mobile (only for student users) */}
-                {user && !user.isAdmin && (
+                {/* Hamburger menu button for mobile */}
+                {user && (
                     <button 
                         className="mobile-menu-toggle" 
                         onClick={toggleMobileMenu}
@@ -48,7 +48,7 @@ function Navbar() {
                         </span>
                     </button>
                 )}
-                <ul className={`nav-links ${user && !user.isAdmin && mobileMenuOpen ? 'mobile-open' : ''}`} id="navLinks">
+                <ul className={`nav-links ${user && mobileMenuOpen ? 'mobile-open' : ''}`} id="navLinks">
                     {!user ? (
                         <>
                             <li><Link to="/" className={currentPath === '/' ? 'active' : ''}>Home</Link></li>
@@ -56,8 +56,8 @@ function Navbar() {
                         </>
                     ) : user.isAdmin ? (
                         <>
-                            <li><Link to="/admin" className={currentPath === '/admin' ? 'active' : ''}>Admin Dashboard</Link></li>
-                            <li><Link to="/">Home</Link></li>
+                            <li><Link to="/admin" onClick={closeMobileMenu} className={currentPath === '/admin' ? 'active' : ''}>Admin Dashboard</Link></li>
+                            <li><Link to="/" onClick={closeMobileMenu}>Home</Link></li>
                             <li><a href="#" onClick={(e) => { e.preventDefault(); logoutUser(); }} className="btn-logout">Logout</a></li>
                         </>
                     ) : (
