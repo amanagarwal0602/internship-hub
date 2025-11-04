@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { checkLoginStatus } from '../utils/auth';
 import { showConfirmModal, showMessage } from '../utils/notifications';
 
@@ -7,12 +7,14 @@ function Navbar() {
     const location = useLocation();
     const user = checkLoginStatus();
     const currentPath = location.pathname;
+    const navigate = useNavigate();
 
     const logoutUser = () => {
         showConfirmModal('Are you sure you want to logout?', () => {
             localStorage.removeItem('loggedInUser');
             showMessage('Logged out successfully', 'success');
-            setTimeout(() => window.location.href = '/login', 1000);
+            // use client-side navigation to avoid server 404 on static hosts (Vercel)
+            setTimeout(() => navigate('/login'), 1000);
         });
     };
 
