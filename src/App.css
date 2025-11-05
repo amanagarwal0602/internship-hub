@@ -3119,17 +3119,23 @@ section {
 
 /* Main Background */
 body.dark-mode {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    background: #000000;
     background-attachment: fixed;
-    color: #e2e8f0;
+    color: #ffffff;
+    
+    /* Override CSS variables for dark mode */
+    --bg-light: #0a0a0a;
+    --white: #0a0a0a;
+    --text-dark: #ffffff;
+    --text-light: #cccccc;
 }
 
-/* Navbar - Sleek Dark Design */
+/* Navbar - Pure Black Design */
 body.dark-mode .navbar {
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    border-bottom: 1px solid rgba(100, 116, 139, 0.2);
+    background: #000000;
+    backdrop-filter: none;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #1a1a1a;
 }
 
 body.dark-mode .nav-brand h2 {
@@ -3140,28 +3146,30 @@ body.dark-mode .nav-brand h2 {
 }
 
 body.dark-mode .nav-links a {
-    color: #cbd5e1;
+    color: #ffffff;
 }
 
 body.dark-mode .nav-links a:hover,
 body.dark-mode .nav-links a.active {
-    background: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(167, 139, 250, 0.15) 100%);
+    background: #1a1a1a;
     color: #60a5fa;
 }
 
-/* Hero Section - Stunning Gradient */
+/* Hero Section - Pure Black with Gradient Text */
 body.dark-mode .hero {
-    background: linear-gradient(135deg, #1e3a8a 0%, #581c87 100%);
-    box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.3);
+    background: #000000;
+    box-shadow: none;
+    border-bottom: 1px solid #1a1a1a;
 }
 
 body.dark-mode .hero-title,
 body.dark-mode .hero-subtitle,
 body.dark-mode .hero-description {
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    text-shadow: none;
+    color: #ffffff;
 }
 
-/* Cards - Modern Glass Morphism */
+/* Cards - Pure Black with Subtle Border */
 body.dark-mode .card,
 body.dark-mode .stats-card,
 body.dark-mode .internship-card,
@@ -3170,11 +3178,11 @@ body.dark-mode .student-card,
 body.dark-mode .feature-card,
 body.dark-mode .auth-card,
 body.dark-mode .auth-info {
-    background: rgba(30, 41, 59, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(100, 116, 139, 0.2);
-    color: #e2e8f0;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    background: #0a0a0a;
+    backdrop-filter: none;
+    border: 1px solid #1a1a1a;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
 }
 
 body.dark-mode .card:hover,
@@ -3183,9 +3191,9 @@ body.dark-mode .internship-card:hover,
 body.dark-mode .application-card:hover,
 body.dark-mode .student-card:hover,
 body.dark-mode .feature-card:hover {
-    border-color: rgba(96, 165, 250, 0.4);
-    box-shadow: 0 12px 40px rgba(96, 165, 250, 0.2);
-    transform: translateY(-5px);
+    border-color: #2a2a2a;
+    box-shadow: 0 6px 20px rgba(96, 165, 250, 0.3);
+    transform: translateY(-3px);
 }
 
 /* Sections */
@@ -3193,20 +3201,21 @@ body.dark-mode .section,
 body.dark-mode .internships-section,
 body.dark-mode .dashboard-section,
 body.dark-mode .auth-section {
-    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    background: #000000;
 }
 
 body.dark-mode .page-header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #581c87 100%);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: #0a0a0a;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid #1a1a1a;
 }
 
 /* Footer */
 body.dark-mode .footer {
-    background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px);
-    color: #cbd5e1;
-    border-top: 1px solid rgba(100, 116, 139, 0.2);
+    background: #000000;
+    backdrop-filter: none;
+    color: #ffffff;
+    border-top: 1px solid #1a1a1a;
 }
 
 body.dark-mode .footer a {
@@ -3217,28 +3226,28 @@ body.dark-mode .footer a:hover {
     color: #93c5fd;
 }
 
-/* Form Elements - Elegant Input Fields */
+/* Form Elements - Pure Black Input Fields */
 body.dark-mode input,
 body.dark-mode textarea,
 body.dark-mode select,
 body.dark-mode .status-select {
-    background: rgba(30, 41, 59, 0.6);
-    color: #e2e8f0;
-    border: 1px solid rgba(100, 116, 139, 0.3);
-    backdrop-filter: blur(5px);
+    background: #0a0a0a;
+    color: #ffffff;
+    border: 1px solid #1a1a1a;
+    backdrop-filter: none;
 }
 
 body.dark-mode input:focus,
 body.dark-mode textarea:focus,
 body.dark-mode select:focus {
-    background: rgba(30, 41, 59, 0.8);
+    background: #0a0a0a;
     border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
 }
 
 body.dark-mode input::placeholder,
 body.dark-mode textarea::placeholder {
-    color: #64748b;
+    color: #666666;
 }
 
 /* Typography */
@@ -3246,35 +3255,36 @@ body.dark-mode h1,
 body.dark-mode h2, 
 body.dark-mode h3, 
 body.dark-mode h4 {
-    color: #f1f5f9;
+    color: #ffffff;
 }
 
 body.dark-mode p {
-    color: #cbd5e1;
+    color: #cccccc;
 }
 
 body.dark-mode .text-light,
 body.dark-mode .detail-label,
 body.dark-mode .activity-date {
-    color: #94a3b8;
+    color: #999999;
 }
 
 /* Badges & Tags */
 body.dark-mode .company-badge,
 body.dark-mode .skill-tag {
-    background: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(167, 139, 250, 0.2) 100%);
-    color: #93c5fd;
-    border: 1px solid rgba(96, 165, 250, 0.3);
+    background: #1a1a1a;
+    color: #60a5fa;
+    border: 1px solid #2a2a2a;
 }
 
 body.dark-mode .status-badge {
-    backdrop-filter: blur(5px);
+    backdrop-filter: none;
 }
 
-/* Buttons - Vibrant Accents */
+/* Buttons - Vibrant Accents on Black */
 body.dark-mode .btn-primary {
     background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
     box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+    color: #ffffff;
 }
 
 body.dark-mode .btn-primary:hover {
@@ -3290,17 +3300,19 @@ body.dark-mode .btn-apply:hover {
 }
 
 body.dark-mode .btn-apply.applied {
-    background: rgba(100, 116, 139, 0.5);
-    color: #94a3b8;
+    background: #1a1a1a;
+    color: #999999;
+    border: 1px solid #2a2a2a;
 }
 
 /* Dashboard Stats */
 body.dark-mode .stats-grid .stats-card {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%);
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
 }
 
 body.dark-mode .stat-icon {
-    filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.5));
+    filter: none;
 }
 
 /* Dark Mode Toggle in Dark Mode */
@@ -3315,19 +3327,19 @@ body.dark-mode .dark-mode-toggle:hover {
 
 /* Mobile Menu in Dark Mode */
 body.dark-mode .mobile-menu-toggle .hamburger span {
-    background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+    background: #ffffff;
 }
 
 @media (max-width: 768px) {
     body.dark-mode .nav-links {
-        background: rgba(15, 23, 42, 0.98);
-        backdrop-filter: blur(20px);
-        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.6);
-        border-left: 1px solid rgba(100, 116, 139, 0.2);
+        background: #000000;
+        backdrop-filter: none;
+        box-shadow: -4px 0 20px rgba(255, 255, 255, 0.1);
+        border-left: 1px solid #1a1a1a;
     }
     
     body.dark-mode .nav-links li {
-        border-bottom: 1px solid rgba(100, 116, 139, 0.15);
+        border-bottom: 1px solid #1a1a1a;
     }
 }
 
@@ -3337,66 +3349,662 @@ body.dark-mode::-webkit-scrollbar {
 }
 
 body.dark-mode::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: #000000;
 }
 
 body.dark-mode::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #334155 0%, #475569 100%);
+    background: #1a1a1a;
     border-radius: 6px;
 }
 
 body.dark-mode::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+    background: #2a2a2a;
 }
 
 /* Activity Items */
 body.dark-mode .activity-item {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(100, 116, 139, 0.2);
+    background: #0a0a0a;
+    border: 1px solid #1a1a1a;
 }
 
 body.dark-mode .activity-item:hover {
-    background: rgba(30, 41, 59, 0.8);
-    border-color: rgba(96, 165, 250, 0.3);
+    background: #1a1a1a;
+    border-color: #2a2a2a;
 }
 
 /* Table Dark Mode */
 body.dark-mode table {
-    border-color: rgba(100, 116, 139, 0.2);
+    border-color: #1a1a1a;
 }
 
 body.dark-mode th {
-    background: rgba(30, 41, 59, 0.8);
-    color: #f1f5f9;
+    background: #0a0a0a;
+    color: #ffffff;
+    border: 1px solid #1a1a1a;
 }
 
 body.dark-mode td {
-    border-color: rgba(100, 116, 139, 0.15);
+    border-color: #1a1a1a;
+    color: #cccccc;
 }
 
 body.dark-mode tr:hover {
-    background: rgba(96, 165, 250, 0.05);
+    background: #0a0a0a;
 }
 
 /* Demo Buttons */
 body.dark-mode .btn-demo {
-    background: rgba(59, 130, 246, 0.15);
+    background: #0a0a0a;
     color: #60a5fa;
-    border: 1px solid rgba(96, 165, 250, 0.3);
+    border: 1px solid #1a1a1a;
 }
 
 body.dark-mode .btn-demo:hover {
-    background: rgba(59, 130, 246, 0.25);
+    background: #1a1a1a;
     border-color: #60a5fa;
 }
 
 body.dark-mode .btn-demo.admin {
-    background: rgba(168, 85, 247, 0.15);
+    background: #0a0a0a;
     color: #a78bfa;
-    border-color: rgba(167, 139, 250, 0.3);
+    border-color: #1a1a1a;
 }
 
 body.dark-mode .btn-demo.admin:hover {
-    background: rgba(168, 85, 247, 0.25);
+    background: #1a1a1a;
     border-color: #a78bfa;
+}
+
+/* Force Dark Mode for All Pages */
+body.dark-mode .auth-card,
+body.dark-mode .auth-info,
+body.dark-mode .dashboard-card,
+body.dark-mode .enrollment-card,
+body.dark-mode .admin-table-container,
+body.dark-mode .student-detail-view,
+body.dark-mode .enrollment-detail-card,
+body.dark-mode .tab-content,
+body.dark-mode .modal-content {
+    background: #0a0a0a !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .container,
+body.dark-mode .auth-container {
+    background: transparent !important;
+}
+
+/* Dashboard specific */
+body.dark-mode .dashboard-section,
+body.dark-mode .enrolled-section,
+body.dark-mode .admin-section {
+    background: #000000 !important;
+}
+
+body.dark-mode .dashboard-header h2,
+body.dark-mode .enrolled-header h2,
+body.dark-mode .section-header h2 {
+    color: #ffffff !important;
+}
+
+/* Admin Panel specific */
+body.dark-mode .admin-tabs {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .tab-btn {
+    background: transparent !important;
+    color: #cccccc !important;
+    border: none !important;
+}
+
+body.dark-mode .tab-btn.active {
+    background: #1a1a1a !important;
+    color: #60a5fa !important;
+}
+
+body.dark-mode .admin-avatar {
+    background: #1a1a1a !important;
+    color: #60a5fa !important;
+}
+
+/* Form labels and text */
+body.dark-mode label,
+body.dark-mode .detail-label,
+body.dark-mode .section-subtitle {
+    color: #cccccc !important;
+}
+
+/* Task management */
+body.dark-mode .task-list,
+body.dark-mode .task-item,
+body.dark-mode .add-task-form {
+    background: #0a0a0a !important;
+    border-color: #1a1a1a !important;
+}
+
+body.dark-mode .task-title {
+    color: #ffffff !important;
+}
+
+body.dark-mode .task-notes {
+    color: #999999 !important;
+}
+
+/* Feedback sections */
+body.dark-mode .feedback-display,
+body.dark-mode .feedback-section {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .feedback-text {
+    color: #cccccc !important;
+}
+
+/* No data messages */
+body.dark-mode .no-data,
+body.dark-mode .no-applications,
+body.dark-mode .no-enrollments {
+    color: #999999 !important;
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+/* Student cards */
+body.dark-mode .student-card,
+body.dark-mode .student-avatar-small {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .student-info-small h3 {
+    color: #ffffff !important;
+}
+
+body.dark-mode .student-info-small p {
+    color: #cccccc !important;
+}
+
+/* Admin table */
+body.dark-mode .admin-table {
+    background: #0a0a0a !important;
+}
+
+body.dark-mode .admin-table thead {
+    background: #000000 !important;
+}
+
+body.dark-mode .admin-table tbody tr {
+    background: #0a0a0a !important;
+}
+
+body.dark-mode .admin-table tbody tr:hover {
+    background: #1a1a1a !important;
+}
+
+/* Auth page specific */
+body.dark-mode .auth-section {
+    background: #000000 !important;
+}
+
+body.dark-mode .auth-header h1 {
+    color: #ffffff !important;
+}
+
+body.dark-mode .auth-header p {
+    color: #cccccc !important;
+}
+
+body.dark-mode .auth-info h2 {
+    color: #ffffff !important;
+}
+
+body.dark-mode .auth-info p,
+body.dark-mode .auth-info li {
+    color: #cccccc !important;
+}
+
+/* Demo Accounts Section Fix */
+body.dark-mode .demo-accounts {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .demo-accounts p {
+    color: #ffffff !important;
+}
+
+body.dark-mode .demo-user-notice {
+    background: #1a1a1a !important;
+    border: 2px solid #ffc107 !important;
+}
+
+body.dark-mode .demo-user-notice p {
+    color: #ffc107 !important;
+}
+
+/* Dashboard welcome */
+body.dark-mode .welcome-section,
+body.dark-mode .dashboard-profile {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .welcome-section h2,
+body.dark-mode .dashboard-profile h3 {
+    color: #ffffff !important;
+}
+
+/* Enrollment cards */
+body.dark-mode .enrollment-header {
+    background: transparent !important;
+}
+
+body.dark-mode .enrollment-info h3 {
+    color: #ffffff !important;
+}
+
+body.dark-mode .company-name,
+body.dark-mode .applied-date {
+    color: #999999 !important;
+}
+
+/* Progress bars */
+body.dark-mode .progress-bar-container {
+    background: #1a1a1a !important;
+}
+
+body.dark-mode .progress-percentage {
+    color: #60a5fa !important;
+}
+
+/* Ensure all text is readable */
+body.dark-mode * {
+    border-color: #1a1a1a !important;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: #ffffff !important;
+}
+
+/* Fix Demo Buttons Container */
+body.dark-mode .demo-buttons {
+    background: transparent !important;
+}
+
+body.dark-mode .btn-demo {
+    background: #0a0a0a !important;
+    color: #60a5fa !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .btn-demo:hover {
+    background: #1a1a1a !important;
+    border-color: #60a5fa !important;
+}
+
+body.dark-mode .btn-demo.admin {
+    background: #0a0a0a !important;
+    color: #a78bfa !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+body.dark-mode .btn-demo.admin:hover {
+    background: #1a1a1a !important;
+    border-color: #a78bfa !important;
+}
+
+/* Fix Stats Grid Container */
+body.dark-mode .stats-grid {
+    background: transparent !important;
+}
+
+body.dark-mode .stat-card {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+/* Fix Activity List */
+body.dark-mode .activity-list {
+    background: transparent !important;
+}
+
+body.dark-mode .activity-item {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a !important;
+}
+
+/* Fix Dashboard Grid */
+body.dark-mode .dashboard-grid {
+    background: transparent !important;
+}
+
+/* Fix Recent Activity Section */
+body.dark-mode .recent-activity,
+body.dark-mode .quick-actions {
+    background: #0a0a0a !important;
+}
+
+/* Override any remaining white backgrounds */
+body.dark-mode div,
+body.dark-mode section {
+    background-color: transparent !important;
+}
+
+body.dark-mode .container {
+    background: transparent !important;
+}
+
+/* Specific fixes for nested white backgrounds */
+body.dark-mode .auth-section .container,
+body.dark-mode .dashboard-section .container,
+body.dark-mode .admin-section .container {
+    background: transparent !important;
+}
+
+body.dark-mode .auth-container > div,
+body.dark-mode .dashboard-grid > div,
+body.dark-mode .stats-grid > div {
+    background: #0a0a0a !important;
+}
+
+/* Admin Stats Section Fix */
+body.dark-mode .admin-stats {
+    background: #000000 !important;
+    border: none !important;
+}
+
+body.dark-mode .admin-stats .container {
+    background: transparent !important;
+}
+
+/* Admin Section Fix */
+body.dark-mode .admin-section {
+    background: #000000 !important;
+}
+
+/* Dashboard Section Fix */
+body.dark-mode .dashboard-section {
+    background: #000000 !important;
+}
+
+/* Status Section Fix */
+body.dark-mode .status-section {
+    background: #000000 !important;
+}
+
+/* Override all sections with bg-light variable */
+body.dark-mode [style*="background"] {
+    background: #0a0a0a !important;
+}
+
+/* Fix any inline styles */
+body.dark-mode .stat-primary,
+body.dark-mode .stat-success,
+body.dark-mode .stat-warning,
+body.dark-mode .stat-info,
+body.dark-mode .stat-users,
+body.dark-mode .stat-internships,
+body.dark-mode .stat-applications,
+body.dark-mode .stat-active {
+    background: #0a0a0a !important;
+}
+
+/* Force override for all common white background classes */
+body.dark-mode .bg-light,
+body.dark-mode .bg-white,
+body.dark-mode [class*="bg-"],
+body.dark-mode [style*="background: white"],
+body.dark-mode [style*="background: #fff"],
+body.dark-mode [style*="background-color: white"],
+body.dark-mode [style*="background-color: #fff"] {
+    background: #0a0a0a !important;
+    background-color: #0a0a0a !important;
+}
+
+/* Ensure nested divs don't have white backgrounds */
+body.dark-mode .container > div,
+body.dark-mode .section > div,
+body.dark-mode .grid > div {
+    background: transparent !important;
+}
+
+/* Fix for wrapped content */
+body.dark-mode .content-wrapper,
+body.dark-mode .main-content,
+body.dark-mode .page-content {
+    background: transparent !important;
+}
+
+/* ========================================
+   MODAL STYLES
+   ======================================== */
+
+/* Admin Modal Overlay - Specific to avoid conflicts */
+.admin-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+    padding: 1rem;
+}
+
+/* Admin Modal Content - Specific to avoid conflicts */
+.admin-modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    pointer-events: all;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s ease;
+    padding: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal Content */
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 450px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+    pointer-events: all;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Modal Close Button */
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #999;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: #f0f0f0;
+    color: #333;
+    transform: rotate(90deg);
+}
+
+/* Modal Header */
+.modal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.modal-header h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-header p {
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+/* Modal Form */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 0.9rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-actions .btn-secondary {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.modal-actions .btn-secondary:hover {
+    background: #dee2e6;
+}
+
+.modal-actions .btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+}
+
+.modal-actions .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 117, 252, 0.4);
+}
+
+/* Dark Mode Modal Styles */
+body.dark-mode .admin-modal-overlay,
+body.dark-mode .modal-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+body.dark-mode .admin-modal-content,
+body.dark-mode .modal-content {
+    background: #0a0a0a !important;
+    border: 1px solid #1a1a1a;
+}
+
+body.dark-mode .modal-header h2 {
+    color: #60a5fa !important;
+}
+
+body.dark-mode .modal-header p {
+    color: #cccccc !important;
+}
+
+body.dark-mode .modal-close {
+    color: #999;
+}
+
+body.dark-mode .modal-close:hover {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+body.dark-mode .modal-actions .btn-secondary {
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #2a2a2a;
+}
+
+body.dark-mode .modal-actions .btn-secondary:hover {
+    background: #2a2a2a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
 }

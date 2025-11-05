@@ -26,10 +26,8 @@ function Enrolled() {
             setTimeout(() => navigate('/login'), 1000);
             return;
         }
-        loadEnrolledInternships();
-    }, [loggedInUser, navigate]);
-
-    const loadEnrolledInternships = () => {
+        
+        // Load enrolled internships
         const userApps = getUserApplications();
         // Enrich with internship details
         const enrichedApps = userApps.map(app => {
@@ -37,7 +35,23 @@ function Enrolled() {
             return {
                 ...app,
                 internshipTitle: internship?.title || app.internshipTitle,
-                company: internship?.company || app.company
+                company: internship?.company || app.company,
+                tasks: app.tasks || []
+            };
+        });
+        setEnrolledInternships(enrichedApps);
+    }, [loggedInUser, navigate, getUserApplications, internships]);
+
+    // Reload enrolled internships data
+    const reloadData = () => {
+        const userApps = getUserApplications();
+        const enrichedApps = userApps.map(app => {
+            const internship = internships.find(i => i.id === app.internshipId);
+            return {
+                ...app,
+                internshipTitle: internship?.title || app.internshipTitle,
+                company: internship?.company || app.company,
+                tasks: app.tasks || []
             };
         });
         setEnrolledInternships(enrichedApps);
@@ -52,27 +66,37 @@ function Enrolled() {
         addTaskToApplication(applicationId, newTask);
         showMessage('Task added successfully', 'success');
         setNewTask({ title: '', description: '' });
-        loadEnrolledInternships();
+        reloadData();
     };
 
     const handleToggleTaskStatus = (applicationId, taskId, currentStatus) => {
         const newStatus = currentStatus === 'Completed' ? 'Pending' : 'Completed';
         updateTaskStatus(applicationId, taskId, newStatus);
         showMessage('Task status updated', 'success');
-        loadEnrolledInternships();
+        reloadData();
     };
 
     const handleDeleteTask = (applicationId, taskId) => {
         showConfirmModal('Are you sure you want to delete this task?', () => {
             deleteTask(applicationId, taskId);
             showMessage('Task deleted successfully', 'success');
-            loadEnrolledInternships();
+            reloadData();
         });
     };
 
     const toggleExpanded = (applicationId) => {
         setExpandedInternship(expandedInternship === applicationId ? null : applicationId);
         setNewTask({ title: '', description: '' });
+    };
+
+    const clearAllEnrollments = () => {
+        showConfirmModal('Are you sure you want to clear all enrollments?', () => {
+            enrolledInternships.forEach(enrollment => {
+                deleteApplication(enrollment.id);
+            });
+            showMessage('All enrollments cleared', 'success');
+            reloadData();
+        });
     };
 
     if (!loggedInUser) return null;

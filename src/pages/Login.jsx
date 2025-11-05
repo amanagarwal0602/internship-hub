@@ -13,6 +13,8 @@ function Login() {
         loginPassword: ''
     });
     const [message, setMessage] = useState({ text: '', type: '' });
+    const [showAdminModal, setShowAdminModal] = useState(false);
+    const [adminPassword, setAdminPassword] = useState('');
 
     // Redirect if already logged in
     useEffect(() => {
@@ -38,12 +40,33 @@ function Login() {
     };
 
     const fillAdminDemo = () => {
-        const adminUser = users.find(u => u.email === '2400033073@kluniversity.in');
-        if (adminUser) {
+        setShowAdminModal(true);
+    };
+
+    const handleAdminLogin = (e) => {
+        e.preventDefault();
+        if (adminPassword === 'suhani123') {
+            const adminUser = {
+                username: 'Suhani Parashar',
+                email: 'admin@internhub.com',
+                rollId: '2400033073',
+                college: 'KL University',
+                isAdmin: true
+            };
             login(adminUser);
             showMessage('Logged in as Suhani Parashar (Admin)!', 'success');
+            setShowAdminModal(false);
+            setAdminPassword('');
             setTimeout(() => navigate('/admin'), 1000);
+        } else {
+            showMessage('Incorrect admin password!', 'error');
+            setAdminPassword('');
         }
+    };
+
+    const closeAdminModal = () => {
+        setShowAdminModal(false);
+        setAdminPassword('');
     };
 
     const loginUser = (e) => {
@@ -57,9 +80,9 @@ function Login() {
         }
         
         // Check for admin login
-        if (loginIdentifier === 'admin' && loginPassword === 'admin123') {
+        if (loginIdentifier === 'admin' && loginPassword === 'suhani123') {
             const adminUser = {
-                username: 'admin',
+                username: 'Suhani Parashar',
                 email: 'admin@internhub.com',
                 isAdmin: true
             };
@@ -146,6 +169,41 @@ function Login() {
                     </div>
                 </div>
             </section>
+
+            {/* Admin Password Modal */}
+            {showAdminModal && (
+                <div className="admin-modal-overlay">
+                    <div className="admin-modal-content">
+                        <button className="modal-close" onClick={closeAdminModal} type="button">×</button>
+                        <div className="modal-header">
+                            <h2>🔐 Admin Access</h2>
+                            <p>Enter password to login as admin</p>
+                        </div>
+                        <form onSubmit={handleAdminLogin} className="modal-form">
+                            <div className="form-group">
+                                <label htmlFor="adminPassword">Admin Password</label>
+                                <input
+                                    type="password"
+                                    id="adminPassword"
+                                    value={adminPassword}
+                                    onChange={(e) => setAdminPassword(e.target.value)}
+                                    placeholder="Enter admin password"
+                                    autoFocus
+                                    required
+                                />
+                            </div>
+                            <div className="modal-actions">
+                                <button type="button" className="btn-secondary" onClick={closeAdminModal}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn-primary">
+                                    Login as Admin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

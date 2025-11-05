@@ -27,6 +27,20 @@ function Admin() {
         activeUsers: 0
     });
 
+    // Enrich applications with user and internship details
+    const allApplications = applications.map(app => {
+        const user = users.find(u => u.email === app.userId);
+        const internship = internships.find(i => i.id === app.internshipId);
+        return {
+            ...app,
+            userName: user?.username || 'Unknown',
+            userEmail: app.userId,
+            internshipTitle: internship?.title || app.internshipTitle || 'N/A',
+            company: internship?.company || app.company || 'N/A',
+            appliedDate: app.appliedAt || app.appliedDate || new Date().toISOString()
+        };
+    });
+
     useEffect(() => {
         if (!loggedInUser) {
             showMessage('Please login to access this page', 'warning');
@@ -40,10 +54,7 @@ function Admin() {
             return;
         }
         
-        calculateStats();
-    }, [loggedInUser, users, applications, navigate]);
-
-    const calculateStats = () => {
+        // Calculate stats inline
         const activeUserEmails = new Set(applications.map(app => app.userId));
         setStats({
             totalUsers: users.length,
@@ -51,14 +62,26 @@ function Admin() {
             totalApplications: applications.length,
             activeUsers: activeUserEmails.size
         });
-    };
+    }, [loggedInUser, users, applications, internships, navigate]);
 
     const viewStudentDetails = (userEmail) => {
-        const student = users.find(u => u.email === userEmail);
+        const user = users.find(u => u.email === userEmail);
         const studentApps = applications.filter(app => app.userId === userEmail);
+        
+        // Enrich applications with internship details
+        const enrichedApps = studentApps.map(app => {
+            const internship = internships.find(i => i.id === app.internshipId);
+            return {
+                ...app,
+                internshipTitle: internship?.title || app.internshipTitle || 'N/A',
+                company: internship?.company || app.company || 'N/A',
+                tasks: app.tasks || []
+            };
+        });
+        
         setSelectedStudent({
-            ...student,
-            applications: studentApps
+            ...user,
+            enrollments: enrichedApps
         });
     };
 
@@ -107,6 +130,13 @@ function Admin() {
         if (!name) return 'AD';
         const nameParts = name.split(' ');
         return nameParts.map(part => part.charAt(0).toUpperCase()).join('');
+    };
+
+    const clearAllUsers = () => {
+        showConfirmModal('This action cannot be undone. Clear all users?', () => {
+            // This would need a function in Context to clear users
+            showMessage('This feature requires backend implementation', 'info');
+        });
     };
 
     if (!loggedInUser) return null;
@@ -321,12 +351,12 @@ function Admin() {
                                 <StudentProgressView 
                                     student={selectedStudent}
                                     onClose={() => setSelectedStudent(null)}
-                                    onSaveFeedback={addFeedback}
+                                    onSaveFeedback={handleAddFeedback}
                                 />
                             ) : (
                                 <div className="students-grid">
                                     {users.filter(u => !u.isAdmin).map((student, index) => {
-                                        const studentEnrollments = applications.filter(e => e.userEmail === student.email);
+                                        const studentEnrollments = applications.filter(e => e.userId === student.email);
                                         return (
                                             <div key={index} className="student-card" onClick={() => viewStudentDetails(student.email)}>
                                                 <div className="student-avatar-small">
