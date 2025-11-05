@@ -49,53 +49,33 @@ export const AppContextProvider = ({ children }) => {
         loggedInUser ? api.applications.getAll(loggedInUser.id).catch(() => []) : Promise.resolve([])
       ]);
 
-      setInternships(internshipsData);
+      setInternships(internshipsData.length > 0 ? internshipsData : getFallbackInternships());
       setUsers(usersData);
       setApplications(applicationsData);
     } catch (error) {
       console.error('Error fetching data:', error);
+      // Use fallback data if API fails
+      setInternships(getFallbackInternships());
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Fallback internships data
+  // Fallback internships data for offline mode
   const getFallbackInternships = () => [
     {
-      id: 1,
+      _id: '1',
       title: "Frontend Developer Intern",
       company: "TechCorp Solutions",
       duration: "3 Months",
       location: "Remote",
       stipend: "₹15,000/month",
-      description: "Work on modern web applications using React, Vue, or Angular. Learn from experienced developers.",
+      description: "Work on modern web applications using React, Vue, or Angular.",
       skills: ["HTML", "CSS", "JavaScript", "React"],
       type: "Full-time"
     },
     {
-      id: 2,
-      title: "Data Science Intern",
-      company: "DataMinds Analytics",
-      duration: "6 Months",
-      location: "Bangalore",
-      stipend: "₹20,000/month",
-      description: "Work with Python, machine learning models, and data visualization tools.",
-      skills: ["Python", "Pandas", "Machine Learning", "SQL"],
-      type: "Full-time"
-    },
-    {
-      id: 3,
-      title: "UI/UX Design Intern",
-      company: "Creative Studio",
-      duration: "2 Months",
-      location: "Mumbai",
-      stipend: "₹12,000/month",
-      description: "Design user interfaces and create prototypes using Figma and Adobe XD.",
-      skills: ["Figma", "Adobe XD", "Prototyping", "User Research"],
-      type: "Part-time"
-    },
-    {
-      id: 4,
+      _id: '2',
       title: "Backend Developer Intern",
       company: "CloudTech Systems",
       duration: "4 Months",
@@ -106,32 +86,22 @@ export const AppContextProvider = ({ children }) => {
       type: "Full-time"
     },
     {
-      id: 5,
-      title: "Mobile App Development Intern",
-      company: "AppInnovate Labs",
-      duration: "3 Months",
+      _id: '3',
+      title: "Data Science Intern",
+      company: "Analytics Pro",
+      duration: "6 Months",
       location: "Pune",
-      stipend: "₹16,000/month",
-      description: "Develop cross-platform mobile applications using React Native or Flutter.",
-      skills: ["React Native", "Flutter", "Firebase", "Mobile UI"],
+      stipend: "₹20,000/month",
+      description: "Work on machine learning projects and data analysis.",
+      skills: ["Python", "TensorFlow", "Pandas", "Machine Learning"],
       type: "Full-time"
-    },
-    {
-      id: 6,
-      title: "Digital Marketing Intern",
-      company: "Growth Marketing Co",
-      duration: "2 Months",
-      location: "Remote",
-      stipend: "₹10,000/month",
-      description: "Learn SEO, social media marketing, content creation, and analytics.",
-      skills: ["SEO", "Social Media", "Content Writing", "Google Analytics"],
-      type: "Part-time"
     }
   ];
 
   // Login function
   const login = async (username, password) => {
     try {
+      // Try API first
       const userData = await api.users.login({ username, password });
       setLoggedInUser(userData);
       // Fetch user's applications after login
@@ -139,8 +109,47 @@ export const AppContextProvider = ({ children }) => {
       setApplications(userApps);
       return { success: true, user: userData };
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: error.message };
+      console.log('API login failed, trying offline mode...', error);
+      
+      // Fallback to demo users for offline mode
+      const demoUsers = [
+        {
+          id: 'demo-user',
+          username: 'demo',
+          email: 'demo@internhub.com',
+          fullName: 'Demo Student',
+          role: 'student',
+          password: 'demo123',
+          isAdmin: false
+        },
+        {
+          id: 'admin-user',
+          username: 'admin',
+          email: 'admin@internhub.com',
+          fullName: 'Admin User',
+          role: 'admin',
+          password: 'suhani123',
+          isAdmin: true
+        }
+      ];
+      
+      const offlineUser = demoUsers.find(u => 
+        u.username === username && u.password === password
+      );
+      
+      if (offlineUser) {
+        const { password: _, ...userWithoutPassword } = offlineUser;
+        setLoggedInUser(userWithoutPassword);
+        
+        // Load applications from localStorage
+        const storedApps = JSON.parse(localStorage.getItem('applications') || '[]');
+        const userApps = storedApps.filter(app => app.userId === offlineUser.id);
+        setApplications(userApps);
+        
+        return { success: true, user: userWithoutPassword, offline: true };
+      }
+      
+      return { success: false, error: 'Invalid credentials' };
     }
   };
 
@@ -175,8 +184,26 @@ export const AppContextProvider = ({ children }) => {
       setApplications([...applications, newApplication]);
       return true;
     } catch (error) {
-      console.error('Apply error:', error);
-      return false;
+      console.log('API apply failed, using offline mode...');
+      
+      // Offline fallback - save to localStorage
+      const internship = internships.find(i => i._id === internshipId || i.id === internshipId);
+      const offlineApp = {
+        _id: Date.now().toString(),
+        userId: loggedInUser.id,
+        internshipId: internship,
+        status: 'Pending',
+        appliedDate: new Date().toISOString(),
+        adminFeedback: ''
+      };
+      
+      const updatedApps = [...applications, offlineApp];
+      setApplications(updatedApps);
+      
+      // Save to localStorage
+      localStorage.setItem('applications', JSON.stringify(updatedApps));
+      
+      return true;
     }
   };
 
