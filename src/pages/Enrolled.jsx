@@ -1,156 +1,81 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { checkLoginStatus } from '../utils/auth';
 import { showMessage, showConfirmModal } from '../utils/notifications';
 
 function Enrolled() {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
+    const { 
+        loggedInUser, 
+        getUserApplications, 
+        addTaskToApplication, 
+        updateTaskStatus, 
+        deleteTask,
+        deleteApplication,
+        internships 
+    } = useAppContext();
     const [enrolledInternships, setEnrolledInternships] = useState([]);
     const [expandedInternship, setExpandedInternship] = useState(null);
-    const [newTask, setNewTask] = useState({ title: '', notes: '' });
+    const [newTask, setNewTask] = useState({ title: '', description: '' });
 
     useEffect(() => {
-        const loggedInUser = checkLoginStatus();
         if (!loggedInUser) {
             showMessage('Please login to access this page', 'warning');
             setTimeout(() => navigate('/login'), 1000);
             return;
         }
-        setUser(loggedInUser);
-        loadEnrolledInternships(loggedInUser);
-    }, [navigate]);
+        loadEnrolledInternships();
+    }, [loggedInUser, navigate]);
 
-    const loadEnrolledInternships = (loggedInUser) => {
-        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-        const userEnrollments = enrollments.filter(e => e.userEmail === loggedInUser.email);
-        setEnrolledInternships(userEnrollments);
+    const loadEnrolledInternships = () => {
+        const userApps = getUserApplications();
+        // Enrich with internship details
+        const enrichedApps = userApps.map(app => {
+            const internship = internships.find(i => i.id === app.internshipId);
+            return {
+                ...app,
+                internshipTitle: internship?.title || app.internshipTitle,
+                company: internship?.company || app.company
+            };
+        });
+        setEnrolledInternships(enrichedApps);
     };
 
-    const addTask = (internshipId) => {
+    const handleAddTask = (applicationId) => {
         if (!newTask.title.trim()) {
             showMessage('Task title is required', 'warning');
             return;
         }
 
-        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-        const enrollmentIndex = enrollments.findIndex(
-            e => e.internshipId === internshipId && e.userEmail === user.email
-        );
-
-        if (enrollmentIndex !== -1) {
-            if (!enrollments[enrollmentIndex].tasks) {
-                enrollments[enrollmentIndex].tasks = [];
-            }
-            
-            enrollments[enrollmentIndex].tasks.push({
-                title: newTask.title,
-                notes: newTask.notes,
-                status: 'Pending',
-                createdAt: new Date().toISOString()
-            });
-
-            // Recalculate progress
-            enrollments[enrollmentIndex].progress = calculateProgress(enrollments[enrollmentIndex].tasks);
-            
-            localStorage.setItem('enrollments', JSON.stringify(enrollments));
-            showMessage('Task added successfully', 'success');
-            setNewTask({ title: '', notes: '' });
-            loadEnrolledInternships(user);
-        }
+        addTaskToApplication(applicationId, newTask);
+        showMessage('Task added successfully', 'success');
+        setNewTask({ title: '', description: '' });
+        loadEnrolledInternships();
     };
 
-    const toggleTaskStatus = (internshipId, taskIndex) => {
-        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-        const enrollmentIndex = enrollments.findIndex(
-            e => e.internshipId === internshipId && e.userEmail === user.email
-        );
-
-        if (enrollmentIndex !== -1 && enrollments[enrollmentIndex].tasks[taskIndex]) {
-            const currentStatus = enrollments[enrollmentIndex].tasks[taskIndex].status;
-            enrollments[enrollmentIndex].tasks[taskIndex].status = 
-                currentStatus === 'Done' ? 'Pending' : 'Done';
-            
-            // Recalculate progress
-            enrollments[enrollmentIndex].progress = calculateProgress(enrollments[enrollmentIndex].tasks);
-            
-            localStorage.setItem('enrollments', JSON.stringify(enrollments));
-            showMessage('Task status updated', 'success');
-            loadEnrolledInternships(user);
-        }
+    const handleToggleTaskStatus = (applicationId, taskId, currentStatus) => {
+        const newStatus = currentStatus === 'Completed' ? 'Pending' : 'Completed';
+        updateTaskStatus(applicationId, taskId, newStatus);
+        showMessage('Task status updated', 'success');
+        loadEnrolledInternships();
     };
 
-    const deleteTask = (internshipId, taskIndex) => {
+    const handleDeleteTask = (applicationId, taskId) => {
         showConfirmModal('Are you sure you want to delete this task?', () => {
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            const enrollmentIndex = enrollments.findIndex(
-                e => e.internshipId === internshipId && e.userEmail === user.email
-            );
-
-            if (enrollmentIndex !== -1) {
-                enrollments[enrollmentIndex].tasks.splice(taskIndex, 1);
-                
-                // Recalculate progress
-                enrollments[enrollmentIndex].progress = calculateProgress(enrollments[enrollmentIndex].tasks);
-                
-                localStorage.setItem('enrollments', JSON.stringify(enrollments));
-                showMessage('Task deleted successfully', 'success');
-                loadEnrolledInternships(user);
-            }
+            deleteTask(applicationId, taskId);
+            showMessage('Task deleted successfully', 'success');
+            loadEnrolledInternships();
         });
     };
 
-    const calculateProgress = (tasks) => {
-        if (!tasks || tasks.length === 0) return 0;
-        const completedTasks = tasks.filter(t => t.status === 'Done').length;
-        return Math.round((completedTasks / tasks.length) * 100);
+    const toggleExpanded = (applicationId) => {
+        setExpandedInternship(expandedInternship === applicationId ? null : applicationId);
+        setNewTask({ title: '', description: '' });
     };
 
-    const removeEnrollment = (internshipId) => {
-        showConfirmModal('Are you sure you want to remove this application?', () => {
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            const updatedEnrollments = enrollments.filter(e => 
-                !(e.internshipId === internshipId && e.userEmail === user.email)
-            );
-            
-            localStorage.setItem('enrollments', JSON.stringify(updatedEnrollments));
-            
-            // Also update appliedInternships for backward compatibility
-            const appliedInternships = JSON.parse(localStorage.getItem('appliedInternships') || '[]');
-            const updatedApplications = appliedInternships.filter(app => 
-                !(app.internshipId === internshipId && app.userEmail === user.email)
-            );
-            localStorage.setItem('appliedInternships', JSON.stringify(updatedApplications));
-            
-            showMessage('Application removed successfully', 'success');
-            loadEnrolledInternships(user);
-        });
-    };
-
-    const clearAllEnrollments = () => {
-        showConfirmModal('Are you sure you want to remove ALL applications? This cannot be undone.', () => {
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            const updatedEnrollments = enrollments.filter(e => e.userEmail !== user.email);
-            
-            localStorage.setItem('enrollments', JSON.stringify(updatedEnrollments));
-            
-            const appliedInternships = JSON.parse(localStorage.getItem('appliedInternships') || '[]');
-            const updatedApplications = appliedInternships.filter(app => app.userEmail !== user.email);
-            localStorage.setItem('appliedInternships', JSON.stringify(updatedApplications));
-            
-            showMessage('All applications cleared', 'success');
-            loadEnrolledInternships(user);
-        });
-    };
-
-    const toggleExpanded = (internshipId) => {
-        setExpandedInternship(expandedInternship === internshipId ? null : internshipId);
-        setNewTask({ title: '', notes: '' });
-    };
-
-    if (!user) return null;
+    if (!loggedInUser) return null;
 
     return (
         <>
@@ -191,13 +116,13 @@ function Enrolled() {
                                         <div className="enrollment-actions">
                                             <button 
                                                 className="btn-expand"
-                                                onClick={() => toggleExpanded(enrollment.internshipId)}
+                                                onClick={() => toggleExpanded(enrollment.id)}
                                             >
-                                                {expandedInternship === enrollment.internshipId ? '▼ Collapse' : '▶ Tasks & Progress'}
+                                                {expandedInternship === enrollment.id ? '▼ Collapse' : '▶ Tasks & Progress'}
                                             </button>
                                             <button 
-                                                className="btn-remove-small" 
-                                                onClick={() => removeEnrollment(enrollment.internshipId)}
+                                                className="btn-remove"
+                                                onClick={() => deleteApplication(enrollment.id)}
                                             >
                                                 ✕
                                             </button>
@@ -219,21 +144,16 @@ function Enrolled() {
                                     </div>
 
                                     {/* Expanded Tasks & Feedback Section */}
-                                    {expandedInternship === enrollment.internshipId && (
+                                    {expandedInternship === enrollment.id && (
                                         <div className="tasks-management-section">
-                                            {/* Mentor Feedback Display */}
-                                            {(enrollment.feedback || enrollment.evaluation !== 'Pending') && (
+                                            {/* Admin Feedback Display */}
+                                            {(enrollment.adminFeedback || enrollment.evaluation !== 'Not Evaluated') && (
                                                 <div className="feedback-display">
-                                                    <h4>💬 Mentor Feedback</h4>
-                                                    {enrollment.feedback && <p className="feedback-text">{enrollment.feedback}</p>}
+                                                    <h4>💬 Admin Feedback</h4>
+                                                    {enrollment.adminFeedback && <p className="feedback-text">{enrollment.adminFeedback}</p>}
                                                     <span className={`evaluation-badge evaluation-${enrollment.evaluation?.toLowerCase().replace(' ', '-')}`}>
-                                                        {enrollment.evaluation || 'Pending'}
+                                                        {enrollment.evaluation || 'Not Evaluated'}
                                                     </span>
-                                                    {enrollment.feedbackDate && (
-                                                        <p className="feedback-date">
-                                                            {new Date(enrollment.feedbackDate).toLocaleDateString()}
-                                                        </p>
-                                                    )}
                                                 </div>
                                             )}
 
@@ -243,21 +163,31 @@ function Enrolled() {
                                                 
                                                 {enrollment.tasks && enrollment.tasks.length > 0 && (
                                                     <ul className="task-list">
-                                                        {enrollment.tasks.map((task, taskIndex) => (
-                                                            <li key={taskIndex} className={`task-item ${task.status.toLowerCase()}`}>
+                                                        {enrollment.tasks.map((task) => (
+                                                            <li key={task.id} className={`task-item ${task.status.toLowerCase()}`}>
                                                                 <button 
                                                                     className="task-checkbox"
-                                                                    onClick={() => toggleTaskStatus(enrollment.internshipId, taskIndex)}
+                                                                    onClick={() => handleToggleTaskStatus(enrollment.id, task.id, task.status)}
                                                                 >
-                                                                    {task.status === 'Done' ? '✓' : '○'}
+                                                                    {task.status === 'Completed' ? '✓' : '○'}
                                                                 </button>
                                                                 <div className="task-content">
                                                                     <span className="task-title">{task.title}</span>
-                                                                    {task.notes && <span className="task-notes">{task.notes}</span>}
+                                                                    {task.description && <span className="task-notes">{task.description}</span>}
+                                                                    {task.feedback && (
+                                                                        <div className="task-feedback">
+                                                                            <strong>Admin Feedback:</strong> {task.feedback}
+                                                                        </div>
+                                                                    )}
+                                                                    {task.completedAt && (
+                                                                        <span className="task-completed-date">
+                                                                            Completed: {new Date(task.completedAt).toLocaleDateString()}
+                                                                        </span>
+                                                                    )}
                                                                 </div>
                                                                 <button 
                                                                     className="task-delete"
-                                                                    onClick={() => deleteTask(enrollment.internshipId, taskIndex)}
+                                                                    onClick={() => handleDeleteTask(enrollment.id, task.id)}
                                                                 >
                                                                     🗑️
                                                                 </button>
@@ -274,18 +204,18 @@ function Enrolled() {
                                                         value={newTask.title}
                                                         onChange={(e) => setNewTask({...newTask, title: e.target.value})}
                                                         onKeyPress={(e) => {
-                                                            if (e.key === 'Enter') addTask(enrollment.internshipId);
+                                                            if (e.key === 'Enter') handleAddTask(enrollment.id);
                                                         }}
                                                     />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Notes (optional)"
-                                                        value={newTask.notes}
-                                                        onChange={(e) => setNewTask({...newTask, notes: e.target.value})}
+                                                    <textarea
+                                                        placeholder="Description (optional)"
+                                                        value={newTask.description}
+                                                        onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                                                        rows="2"
                                                     />
                                                     <button 
                                                         className="btn-add-task"
-                                                        onClick={() => addTask(enrollment.internshipId)}
+                                                        onClick={() => handleAddTask(enrollment.id)}
                                                     >
                                                         ➕ Add Task
                                                     </button>

@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
 import Navbar from '../components/Navbar';
-import { checkLoginStatus } from '../utils/auth';
 import { showMessage, showConfirmModal } from '../utils/notifications';
 
 function Admin() {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [activeTab, setActiveTab] = useState('users');
-    const [users, setUsers] = useState([]);
-    const [applications, setApplications] = useState([]);
-    const [allApplications, setAllApplications] = useState([]);
+    const { 
+        loggedInUser, 
+        users, 
+        applications, 
+        internships,
+        updateApplicationStatus, 
+        deleteApplication,
+        addTaskFeedback,
+        addAdminFeedback 
+    } = useAppContext();
+    const [activeTab, setActiveTab] = useState('applications');
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [feedbackForm, setFeedbackForm] = useState({ feedback: '', evaluation: 'Good' });
+    const [taskFeedbackForm, setTaskFeedbackForm] = useState({ taskId: null, feedback: '' });
     const [stats, setStats] = useState({
         totalUsers: 0,
         totalInternships: 6,
         totalApplications: 0,
         activeUsers: 0
     });
-    const [selectedStudent, setSelectedStudent] = useState(null);
 
     useEffect(() => {
-        const loggedInUser = checkLoginStatus();
         if (!loggedInUser) {
             showMessage('Please login to access this page', 'warning');
             setTimeout(() => navigate('/login'), 1000);
@@ -33,82 +40,66 @@ function Admin() {
             return;
         }
         
-        setUser(loggedInUser);
-        loadAdminData(loggedInUser);
-    }, [navigate]);
+        calculateStats();
+    }, [loggedInUser, users, applications, navigate]);
 
-    const loadAdminData = (loggedInUser) => {
-        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-        const appliedInternships = JSON.parse(localStorage.getItem('appliedInternships') || '[]');
-        
-        setUsers(allUsers);
-        setApplications(enrollments);
-        setAllApplications(appliedInternships);
-        
-        // Calculate stats
-        const activeUserEmails = new Set(enrollments.map(e => e.userEmail));
+    const calculateStats = () => {
+        const activeUserEmails = new Set(applications.map(app => app.userId));
         setStats({
-            totalUsers: allUsers.length,
-            totalInternships: 6,
-            totalApplications: appliedInternships.length,
+            totalUsers: users.length,
+            totalInternships: internships.length,
+            totalApplications: applications.length,
             activeUsers: activeUserEmails.size
         });
-
-        // Update admin profile
-        updateAdminProfile(loggedInUser);
     };
 
-    const updateAdminProfile = (loggedInUser) => {
-        const nameParts = (loggedInUser.username || 'Admin').split(' ');
-        const initials = nameParts.map(part => part.charAt(0).toUpperCase()).join('');
-        
-        setTimeout(() => {
-            const adminNameEl = document.getElementById('adminName');
-            const adminInitialsEl = document.getElementById('adminInitials');
-            const adminCollegeEl = document.getElementById('adminCollege');
-            const adminRollIdEl = document.getElementById('adminRollId');
-            
-            if (adminNameEl) adminNameEl.textContent = loggedInUser.username || 'Admin';
-            if (adminInitialsEl) adminInitialsEl.textContent = initials;
-            if (adminCollegeEl) adminCollegeEl.textContent = loggedInUser.college || 'University';
-            if (adminRollIdEl) adminRollIdEl.textContent = loggedInUser.rollId ? `ID: ${loggedInUser.rollId}` : '';
-        }, 100);
-    };
-
-    const clearAllUsers = () => {
-        showConfirmModal('Are you sure you want to delete ALL users? This cannot be undone!', () => {
-            localStorage.setItem('users', '[]');
-            localStorage.setItem('enrollments', '[]');
-            localStorage.setItem('appliedInternships', '[]');
-            showMessage('All users cleared successfully', 'success');
-            loadAdminData(user);
-        });
-    };
-
-    const viewStudentDetails = (studentEmail) => {
-        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-        const studentEnrollments = enrollments.filter(e => e.userEmail === studentEmail);
-        const student = users.find(u => u.email === studentEmail);
-        
+    const viewStudentDetails = (userEmail) => {
+        const student = users.find(u => u.email === userEmail);
+        const studentApps = applications.filter(app => app.userId === userEmail);
         setSelectedStudent({
             ...student,
-            enrollments: studentEnrollments
+            applications: studentApps
         });
     };
 
-    const addFeedback = (enrollmentIndex, feedback, evaluation) => {
-        const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-        if (enrollments[enrollmentIndex]) {
-            enrollments[enrollmentIndex].feedback = feedback;
-            enrollments[enrollmentIndex].evaluation = evaluation;
-            enrollments[enrollmentIndex].feedbackDate = new Date().toISOString();
-            localStorage.setItem('enrollments', JSON.stringify(enrollments));
-            showMessage('Feedback saved successfully', 'success');
-            loadAdminData(user);
+    const handleUpdateStatus = (applicationId, newStatus) => {
+        updateApplicationStatus(applicationId, newStatus);
+        showMessage(`Application status updated to ${newStatus}`, 'success');
+    };
+
+    const handleDeleteApplication = (applicationId) => {
+        showConfirmModal('Are you sure you want to delete this application?', () => {
+            deleteApplication(applicationId);
+            showMessage('Application deleted successfully', 'success');
             if (selectedStudent) {
                 viewStudentDetails(selectedStudent.email);
             }
+        });
+    };
+
+    const handleAddFeedback = (applicationId) => {
+        if (!feedbackForm.feedback.trim()) {
+            showMessage('Please enter feedback', 'warning');
+            return;
+        }
+        addAdminFeedback(applicationId, feedbackForm.feedback, feedbackForm.evaluation);
+        showMessage('Feedback saved successfully', 'success');
+        setFeedbackForm({ feedback: '', evaluation: 'Good' });
+        if (selectedStudent) {
+            viewStudentDetails(selectedStudent.email);
+        }
+    };
+
+    const handleAddTaskFeedback = (applicationId) => {
+        if (!taskFeedbackForm.feedback.trim()) {
+            showMessage('Please enter task feedback', 'warning');
+            return;
+        }
+        addTaskFeedback(applicationId, taskFeedbackForm.taskId, taskFeedbackForm.feedback);
+        showMessage('Task feedback saved successfully', 'success');
+        setTaskFeedbackForm({ taskId: null, feedback: '' });
+        if (selectedStudent) {
+            viewStudentDetails(selectedStudent.email);
         }
     };
 
@@ -118,29 +109,7 @@ function Admin() {
         return nameParts.map(part => part.charAt(0).toUpperCase()).join('');
     };
 
-    const updateApplicationStatus = (applicationId, newStatus) => {
-        const appliedInternships = JSON.parse(localStorage.getItem('appliedInternships') || '[]');
-        const appIndex = appliedInternships.findIndex(app => app.id === applicationId);
-        
-        if (appIndex !== -1) {
-            appliedInternships[appIndex].status = newStatus;
-            localStorage.setItem('appliedInternships', JSON.stringify(appliedInternships));
-            showMessage(`Application status updated to ${newStatus}`, 'success');
-            loadAdminData(user);
-        }
-    };
-
-    const deleteApplication = (applicationId) => {
-        showConfirmModal('Are you sure you want to delete this application?', () => {
-            const appliedInternships = JSON.parse(localStorage.getItem('appliedInternships') || '[]');
-            const filteredApps = appliedInternships.filter(app => app.id !== applicationId);
-            localStorage.setItem('appliedInternships', JSON.stringify(filteredApps));
-            showMessage('Application deleted successfully', 'success');
-            loadAdminData(user);
-        });
-    };
-
-    if (!user) return null;
+    if (!loggedInUser) return null;
 
     return (
         <>
@@ -151,13 +120,13 @@ function Admin() {
                 <div className="container">
                     <div className="admin-profile-header">
                         <div className="admin-avatar">
-                            <span id="adminInitials">{getInitials(user.username)}</span>
+                            <span id="adminInitials">{getInitials(loggedInUser.username)}</span>
                         </div>
                         <div className="admin-info">
                             <h1>👨‍💼 Admin Control Panel</h1>
-                            <p className="admin-name" id="adminName">{user.username}</p>
+                            <p className="admin-name" id="adminName">{loggedInUser.username}</p>
                             <p className="admin-role">
-                                System Administrator • <span id="adminRollId">{user.rollId ? `ID: ${user.rollId}` : ''}</span> • <span id="adminCollege">{user.college || 'KL University'}</span>
+                                System Administrator • <span id="adminRollId">{loggedInUser.rollId ? `ID: ${loggedInUser.rollId}` : ''}</span> • <span id="adminCollege">{loggedInUser.college || 'KL University'}</span>
                             </p>
                         </div>
                     </div>

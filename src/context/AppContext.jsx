@@ -191,12 +191,21 @@ export const AppContextProvider = ({ children }) => {
   const applyForInternship = (internshipId) => {
     if (!loggedInUser) return false;
     
+    const internship = internships.find(i => i.id === internshipId);
+    
     const newApplication = {
       id: Date.now(),
       userId: loggedInUser.email,
+      username: loggedInUser.username,
       internshipId: internshipId,
+      internshipTitle: internship?.title || 'Unknown',
+      company: internship?.company || 'Unknown',
       appliedAt: new Date().toISOString(),
-      status: 'Pending'
+      status: 'Pending',
+      tasks: [],
+      progress: 0,
+      adminFeedback: '',
+      evaluation: 'Not Evaluated'
     };
     
     setApplications([...applications, newApplication]);
@@ -236,6 +245,101 @@ export const AppContextProvider = ({ children }) => {
     setApplications(updatedApplications);
   };
 
+  // Add task to application (student or admin)
+  const addTaskToApplication = (applicationId, task) => {
+    const updatedApplications = applications.map(app => {
+      if (app.id === applicationId) {
+        const newTasks = [...(app.tasks || []), {
+          id: Date.now(),
+          title: task.title,
+          description: task.description || '',
+          status: 'Pending',
+          createdAt: new Date().toISOString(),
+          completedAt: null,
+          feedback: ''
+        }];
+        return {
+          ...app,
+          tasks: newTasks,
+          progress: calculateProgress(newTasks)
+        };
+      }
+      return app;
+    });
+    setApplications(updatedApplications);
+  };
+
+  // Update task status
+  const updateTaskStatus = (applicationId, taskId, newStatus) => {
+    const updatedApplications = applications.map(app => {
+      if (app.id === applicationId) {
+        const newTasks = app.tasks.map(task => 
+          task.id === taskId 
+            ? { 
+                ...task, 
+                status: newStatus,
+                completedAt: newStatus === 'Completed' ? new Date().toISOString() : task.completedAt
+              } 
+            : task
+        );
+        return {
+          ...app,
+          tasks: newTasks,
+          progress: calculateProgress(newTasks)
+        };
+      }
+      return app;
+    });
+    setApplications(updatedApplications);
+  };
+
+  // Add feedback to task (admin only)
+  const addTaskFeedback = (applicationId, taskId, feedback) => {
+    const updatedApplications = applications.map(app => {
+      if (app.id === applicationId) {
+        const newTasks = app.tasks.map(task =>
+          task.id === taskId ? { ...task, feedback } : task
+        );
+        return { ...app, tasks: newTasks };
+      }
+      return app;
+    });
+    setApplications(updatedApplications);
+  };
+
+  // Add admin feedback to application
+  const addAdminFeedback = (applicationId, feedback, evaluation) => {
+    const updatedApplications = applications.map(app =>
+      app.id === applicationId 
+        ? { ...app, adminFeedback: feedback, evaluation: evaluation || app.evaluation } 
+        : app
+    );
+    setApplications(updatedApplications);
+  };
+
+  // Calculate task progress
+  const calculateProgress = (tasks) => {
+    if (!tasks || tasks.length === 0) return 0;
+    const completed = tasks.filter(t => t.status === 'Completed').length;
+    return Math.round((completed / tasks.length) * 100);
+  };
+
+  // Delete task
+  const deleteTask = (applicationId, taskId) => {
+    const updatedApplications = applications.map(app => {
+      if (app.id === applicationId) {
+        const newTasks = app.tasks.filter(task => task.id !== taskId);
+        return {
+          ...app,
+          tasks: newTasks,
+          progress: calculateProgress(newTasks)
+        };
+      }
+      return app;
+    });
+    setApplications(updatedApplications);
+  };
+
   // Context value
   const value = {
     // State
@@ -255,7 +359,12 @@ export const AppContextProvider = ({ children }) => {
     hasApplied,
     toggleDarkMode,
     updateApplicationStatus,
-    deleteApplication
+    deleteApplication,
+    addTaskToApplication,
+    updateTaskStatus,
+    addTaskFeedback,
+    addAdminFeedback,
+    deleteTask
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
