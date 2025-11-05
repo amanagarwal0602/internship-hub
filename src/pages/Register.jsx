@@ -31,12 +31,12 @@ function Register() {
         });
     };
 
-    const registerUser = (e) => {
+    const registerUser = async (e) => {
         e.preventDefault();
         
         const { regUsername, regEmail, regCollege, regBranch, regPassword, regConfirmPassword } = formData;
         const username = regUsername.trim();
-        const email = regEmail.trim();
+        const email = regEmail.trim().toLowerCase();
         const college = regCollege.trim();
         const branch = regBranch.trim();
         
@@ -62,41 +62,24 @@ function Register() {
             return;
         }
         
-        // Check if email is admin email
-        if (email.toLowerCase() === 'admin@internhub.com') {
-            setMessage({ text: 'This email is reserved. Please use another.', type: 'error' });
-            return;
-        }
-        
-        // Check if user already exists
-        if (users.find(u => u.email === email)) {
-            setMessage({ text: 'An account with this email already exists', type: 'error' });
-            return;
-        }
-        
-        if (users.find(u => u.username === username)) {
-            setMessage({ text: 'Username already taken', type: 'error' });
-            return;
-        }
-        
         // Create new user
         const newUser = {
             username,
             email,
-            college,
-            branch,
-            password: regPassword,
-            isAdmin: false,
-            createdAt: new Date().toISOString()
+            fullName: username, // MongoDB User model requires fullName
+            password: regPassword
         };
         
-        register(newUser);
+        const result = await register(newUser);
         
-        setMessage({ text: 'Account created successfully! Redirecting to login...', type: 'success' });
-        
-        setTimeout(() => {
-            navigate('/login');
-        }, 2000);
+        if (result.success) {
+            setMessage({ text: 'Account created successfully! Redirecting to login...', type: 'success' });
+            setTimeout(() => {
+                navigate('/login');
+            }, 2000);
+        } else {
+            setMessage({ text: result.error || 'Registration failed', type: 'error' });
+        }
     };
 
     return (

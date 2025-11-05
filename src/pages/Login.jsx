@@ -30,12 +30,13 @@ function Login() {
         });
     };
 
-    const fillUserDemo = () => {
-        const demoUser = users.find(u => u.email === 'demo@internhub.com');
-        if (demoUser) {
-            login(demoUser);
+    const fillUserDemo = async () => {
+        const result = await login('demo', 'demo123');
+        if (result.success) {
             showMessage('Logged in as Demo User!', 'success');
             setTimeout(() => navigate('/dashboard'), 1000);
+        } else {
+            showMessage(result.error || 'Login failed', 'error');
         }
     };
 
@@ -43,21 +44,18 @@ function Login() {
         setShowAdminModal(true);
     };
 
-    const handleAdminLogin = (e) => {
+    const handleAdminLogin = async (e) => {
         e.preventDefault();
         if (adminPassword === 'suhani123') {
-            const adminUser = {
-                username: 'Suhani Parashar',
-                email: 'admin@internhub.com',
-                rollId: '2400033073',
-                college: 'KL University',
-                isAdmin: true
-            };
-            login(adminUser);
-            showMessage('Logged in as Suhani Parashar (Admin)!', 'success');
-            setShowAdminModal(false);
-            setAdminPassword('');
-            setTimeout(() => navigate('/admin'), 1000);
+            const result = await login('admin', 'suhani123');
+            if (result.success) {
+                showMessage(`Logged in as Admin!`, 'success');
+                setShowAdminModal(false);
+                setAdminPassword('');
+                setTimeout(() => navigate('/admin'), 1000);
+            } else {
+                showMessage(result.error || 'Login failed', 'error');
+            }
         } else {
             showMessage('Incorrect admin password!', 'error');
             setAdminPassword('');
@@ -69,7 +67,7 @@ function Login() {
         setAdminPassword('');
     };
 
-    const loginUser = (e) => {
+    const loginUser = async (e) => {
         e.preventDefault();
         
         const { loginIdentifier, loginPassword } = formData;
@@ -79,30 +77,15 @@ function Login() {
             return;
         }
         
-        // Check for admin login
-        if (loginIdentifier === 'admin' && loginPassword === 'suhani123') {
-            const adminUser = {
-                username: 'Suhani Parashar',
-                email: 'admin@internhub.com',
-                isAdmin: true
-            };
-            login(adminUser);
-            setMessage({ text: 'Admin login successful! Redirecting...', type: 'success' });
-            setTimeout(() => navigate('/admin'), 1000);
-            return;
-        }
+        // Try to login via API
+        const result = await login(loginIdentifier, loginPassword);
         
-        // Check regular users
-        const user = users.find(u => 
-            (u.username === loginIdentifier || u.email === loginIdentifier) && u.password === loginPassword
-        );
-        
-        if (user) {
-            login(user);
-            setMessage({ text: 'Login successful! Redirecting...', type: 'success' });
-            setTimeout(() => navigate(user.isAdmin ? '/admin' : '/dashboard'), 1000);
+        if (result.success) {
+            const isAdmin = result.user.role === 'admin';
+            setMessage({ text: `${isAdmin ? 'Admin' : 'User'} login successful! Redirecting...`, type: 'success' });
+            setTimeout(() => navigate(isAdmin ? '/admin' : '/dashboard'), 1000);
         } else {
-            setMessage({ text: 'Invalid credentials. Please try again.', type: 'error' });
+            setMessage({ text: result.error || 'Invalid username or password', type: 'error' });
         }
     };
 
